@@ -4,17 +4,29 @@ import './App.css';
 
 class App extends Component {
   state = {users: []}
+  pullData = this.pullData.bind(this);
+  handleClick = this.handleClick.bind(this);
 
   componentDidMount(){
+    this.pullData();
+  }
+
+  handleClick(event){
+    fetch('/users',{method: 'delete'}).then(res=>res.json()).then(users=>this.setState({users}));
+    this.pullData();
+  }
+  pullData(){
     fetch('/users').then(res=>res.json()).then(users=>this.setState({users}));
   }
   render() {
     return (
       <div className="App">
-       <TextEntryArea />
-        {this.state.users.map(user =>
-          <div key={user}>{user}</div>
+       <TextEntryArea action={this.pullData} />
+       <div className="messages-header">Saved Messages</div>
+        {this.state.users.map((user, i) =>
+          <div id={i}>{user}</div>
         )}
+        <input onClick={this.handleClick} type="button" value="Pop"/>
       </div>
     );
   }
@@ -23,7 +35,7 @@ class App extends Component {
 class TextEntryArea extends Component {
   constructor(props){
     super (props);
-    this.state = {value:"hello4"};
+    this.state = {value:"Enter Text Here"};
     this.setState.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleClick = this.handleClick.bind(this);
@@ -39,6 +51,7 @@ class TextEntryArea extends Component {
   handleClick(event) {
     console.log(this.getData().value);
     fetch('/users?dataVal='+this.getData().value, {method: 'post'}).then(res=>res.json()).then(users=>this.setState({users}));
+    this.props.action();
   }
 
   getData(){
@@ -47,8 +60,8 @@ class TextEntryArea extends Component {
   render(){
     return(
       <form>
-              <textarea value={this.state.value} ref={this.myRef} onChange={this.handleChange}/>
-              <input onClick={this.handleClick} type="button" value="Undo"/>
+              <textarea value={this.state.value} ref={this.myRef} onChange={this.handleChange}/><br/>
+              <input onClick={this.handleClick} type="button" value="Save"/>
       </form>
     );
   }

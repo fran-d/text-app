@@ -23,6 +23,9 @@
   color: #61dafb;
 }
 
+.messages-header{
+  font-size:24px;
+}
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
